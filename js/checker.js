@@ -281,12 +281,22 @@ async function sendKey() {
         });
       }
     } catch (err) {
-      addMessage(`Testing ${provider.name}...`, 'bot', {
-        status: 'error',
-        icon: '⚠️',
-        title: `Could not verify ${provider.name} key`,
-        details: `Error: ${err.message}<br>Provider: ${provider.name}`,
-      });
+      const isCors = err.message === 'Failed to fetch' || err.name === 'TypeError';
+      if (isCors) {
+        addMessage(`Testing ${provider.name}...`, 'bot', {
+          status: 'error',
+          icon: '🔒',
+          title: `${provider.name} blocked by browser CORS`,
+          details: `This API doesn't allow browser-based checks.<br><br>Run this in your terminal instead:<br><code>curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${key.slice(0,8)}..." ${typeof provider.endpoint === 'function' ? provider.endpoint(key) : provider.endpoint}</code>`,
+        });
+      } else {
+        addMessage(`Testing ${provider.name}...`, 'bot', {
+          status: 'error',
+          icon: '⚠️',
+          title: `Could not verify ${provider.name} key`,
+          details: `Error: ${err.message}<br>Provider: ${provider.name}`,
+        });
+      }
     }
   }
 
