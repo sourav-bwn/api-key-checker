@@ -19,6 +19,7 @@ const providers = [
   { name: 'Vapi', keyPrefix: 'vapi-', color: '#06b6d4' },
   { name: 'AssemblyAI', keyPrefix: 'aa-', color: '#14b8a6' },
   { name: 'RunPod', keyPrefix: 'rpa-', color: '#8b5cf6' },
+  { name: 'NVIDIA', keyPrefix: 'nvapi-', color: '#76b900' },
 ];
 
 const grid = document.getElementById('providersGrid');

@@ -122,6 +122,17 @@ const PROVIDERS = [
     headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
+  {
+    name: 'NVIDIA',
+    testKey: key => key.startsWith('nvapi-'),
+    endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions',
+    headers: key => ({
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    }),
+    validate: async res => res.status !== 401 && res.status !== 403,
+    body: { model: 'moonshotai/kimi-k2.6', messages: [{ role: 'user', content: 'test' }], max_tokens: 1 },
+  },
 ];
 
 const chatMessages = document.getElementById('chatMessages');
@@ -243,11 +254,13 @@ async function sendKey() {
 
     try {
       const endpoint = typeof provider.endpoint === 'function' ? provider.endpoint(key) : provider.endpoint;
-      const response = await fetch(endpoint, {
-        method: 'GET',
+      const fetchOpts = {
+        method: provider.body ? 'POST' : 'GET',
         headers: provider.headers(key),
         signal: AbortSignal.timeout(10000),
-      });
+      };
+      if (provider.body) fetchOpts.body = JSON.stringify(provider.body);
+      const response = await fetch(endpoint, fetchOpts);
 
       const valid = await provider.validate(response);
 
