@@ -11,6 +11,7 @@ from urllib.error import URLError, HTTPError
 PROVIDERS = [
     {
         "name": "OpenAI",
+        "prefix": "sk-",
         "test_key": lambda k: k.startswith("sk-"),
         "method": "GET",
         "endpoint": "https://api.openai.com/v1/models",
@@ -19,6 +20,7 @@ PROVIDERS = [
     },
     {
         "name": "Anthropic",
+        "prefix": "sk-ant-",
         "test_key": lambda k: k.startswith("sk-ant-"),
         "method": "POST",
         "endpoint": "https://api.anthropic.com/v1/messages",
@@ -28,6 +30,7 @@ PROVIDERS = [
     },
     {
         "name": "Google Gemini",
+        "prefix": "AIza",
         "test_key": lambda k: k.startswith("AIza"),
         "method": "GET",
         "endpoint": lambda k: f"https://generativelanguage.googleapis.com/v1/models?key={k}",
@@ -35,6 +38,7 @@ PROVIDERS = [
     },
     {
         "name": "Groq",
+        "prefix": "gsk_",
         "test_key": lambda k: k.startswith("gsk_"),
         "method": "GET",
         "endpoint": "https://api.groq.com/openai/v1/models",
@@ -43,6 +47,7 @@ PROVIDERS = [
     },
     {
         "name": "Hugging Face",
+        "prefix": "hf_",
         "test_key": lambda k: k.startswith("hf_"),
         "method": "GET",
         "endpoint": "https://huggingface.co/api/models",
@@ -51,6 +56,7 @@ PROVIDERS = [
     },
     {
         "name": "Cohere",
+        "prefix": "co",
         "test_key": lambda k: k.startswith("co"),
         "method": "GET",
         "endpoint": "https://api.cohere.ai/v1/models",
@@ -59,6 +65,7 @@ PROVIDERS = [
     },
     {
         "name": "Together AI",
+        "prefix": "tgp-",
         "test_key": lambda k: k.startswith("tgp-"),
         "method": "GET",
         "endpoint": "https://api.together.xyz/v1/models",
@@ -67,6 +74,7 @@ PROVIDERS = [
     },
     {
         "name": "Mistral",
+        "prefix": "xi-",
         "test_key": lambda k: k.startswith("xi-"),
         "method": "GET",
         "endpoint": "https://api.mistral.ai/v1/models",
@@ -75,6 +83,7 @@ PROVIDERS = [
     },
     {
         "name": "Perplexity",
+        "prefix": "pplx-",
         "test_key": lambda k: k.startswith("pplx-"),
         "method": "GET",
         "endpoint": "https://api.perplexity.ai/models",
@@ -83,6 +92,7 @@ PROVIDERS = [
     },
     {
         "name": "Replicate",
+        "prefix": "r8_",
         "test_key": lambda k: k.startswith("r8_"),
         "method": "GET",
         "endpoint": "https://api.replicate.com/v1/models",
@@ -91,6 +101,7 @@ PROVIDERS = [
     },
     {
         "name": "ElevenLabs",
+        "prefix": "sk_",
         "test_key": lambda k: k.startswith("sk_"),
         "method": "GET",
         "endpoint": "https://api.elevenlabs.io/v1/user",
@@ -99,6 +110,7 @@ PROVIDERS = [
     },
     {
         "name": "OpenRouter",
+        "prefix": "sk-or-",
         "test_key": lambda k: k.startswith("sk-or-"),
         "method": "GET",
         "endpoint": "https://openrouter.ai/api/v1/models",
@@ -107,6 +119,7 @@ PROVIDERS = [
     },
     {
         "name": "GitHub",
+        "prefix": "ghp_",
         "test_key": lambda k: k.startswith("ghp_") or k.startswith("github_pat_"),
         "method": "GET",
         "endpoint": "https://api.github.com/user",
@@ -115,6 +128,7 @@ PROVIDERS = [
     },
     {
         "name": "GitLab",
+        "prefix": "glpat-",
         "test_key": lambda k: k.startswith("glpat-"),
         "method": "GET",
         "endpoint": "https://gitlab.com/api/v4/user",
@@ -123,6 +137,7 @@ PROVIDERS = [
     },
     {
         "name": "DeepSeek",
+        "prefix": "sk-",
         "test_key": lambda k: k.startswith("sk-"),
         "method": "GET",
         "endpoint": "https://api.deepseek.com/v1/models",
@@ -131,6 +146,7 @@ PROVIDERS = [
     },
     {
         "name": "NVIDIA",
+        "prefix": "nvapi-",
         "test_key": lambda k: k.startswith("nvapi-"),
         "method": "POST",
         "endpoint": "https://integrate.api.nvidia.com/v1/chat/completions",
@@ -141,12 +157,31 @@ PROVIDERS = [
 ]
 
 
-def check_key(key):
+def pick_providers(key):
+    """Providers whose pattern matches the key, minus less-specific ones.
+
+    Several prefixes nest (sk-ant- and sk-or- both start with sk-). Without
+    this filter a valid Anthropic key was also tested as OpenAI and DeepSeek
+    and reported INVALID by both - a false alarm for a perfectly good key."""
     matched = [p for p in PROVIDERS if p["test_key"](key)]
+    keep = []
+    for p in matched:
+        mine = p["prefix"]
+        more_specific = any(
+            other is not p and other["prefix"] != mine and other["prefix"].startswith(mine)
+            for other in matched
+        )
+        if not more_specific:
+            keep.append(p)
+    return keep
+
+
+def check_key(key):
+    matched = pick_providers(key)
     if not matched:
         print("Could not auto-detect provider. Try these patterns:")
         for p in PROVIDERS:
-            print(f"  {p['name']:15s} {p['test_key'].__doc__ or ''}")
+            print(f"  {p['name']:15s} {p['prefix']}...")
         return
 
     for provider in matched:
