@@ -29,7 +29,9 @@ const PROVIDERS = [
     testKey: key => key.startsWith('AIza'),
     endpoint: key => `https://generativelanguage.googleapis.com/v1/models?key=${key}`,
     headers: () => ({}),
-    validate: async res => res.status !== 403 && res.status !== 401,
+    // Google answers an invalid API key with HTTP 400 (API_KEY_INVALID),
+    // not 401 - without it every bad Gemini key showed as VALID.
+    validate: async res => res.status !== 400 && res.status !== 403 && res.status !== 401,
   },
   {
     name: 'Groq',
