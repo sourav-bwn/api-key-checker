@@ -4,7 +4,7 @@ const PROVIDERS = [
     prefix: 'sk-',
     testKey: key => key.startsWith('sk-'),
     endpoint: 'https://api.openai.com/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -38,7 +38,7 @@ const PROVIDERS = [
     prefix: 'gsk_',
     testKey: key => key.startsWith('gsk_'),
     endpoint: 'https://api.groq.com/openai/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -46,7 +46,7 @@ const PROVIDERS = [
     prefix: 'hf_',
     testKey: key => key.startsWith('hf_'),
     endpoint: 'https://huggingface.co/api/models?limit=1',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -65,7 +65,7 @@ const PROVIDERS = [
     prefix: 'tgp-',
     testKey: key => key.startsWith('tgp-'),
     endpoint: 'https://api.together.xyz/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -73,7 +73,7 @@ const PROVIDERS = [
     prefix: 'xi-',
     testKey: key => key.startsWith('xi-'),
     endpoint: 'https://api.mistral.ai/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -81,7 +81,7 @@ const PROVIDERS = [
     prefix: 'pplx-',
     testKey: key => key.startsWith('pplx-'),
     endpoint: 'https://api.perplexity.ai/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -89,7 +89,7 @@ const PROVIDERS = [
     prefix: 'r8_',
     testKey: key => key.startsWith('r8_'),
     endpoint: 'https://api.replicate.com/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -105,7 +105,7 @@ const PROVIDERS = [
     prefix: 'sk-or-',
     testKey: key => key.startsWith('sk-or-'),
     endpoint: 'https://openrouter.ai/api/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -113,7 +113,7 @@ const PROVIDERS = [
     prefix: 'ghp_',
     testKey: key => key.startsWith('ghp_') || key.startsWith('github_pat_'),
     endpoint: 'https://api.github.com/user',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -121,7 +121,7 @@ const PROVIDERS = [
     prefix: 'glpat-',
     testKey: key => key.startsWith('glpat-'),
     endpoint: 'https://gitlab.com/api/v4/user',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -129,7 +129,7 @@ const PROVIDERS = [
     prefix: 'sk-',
     testKey: key => /^sk-[A-Za-z0-9]{20,}$/.test(key),
     endpoint: 'https://api.stability.ai/v1/user/account',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
@@ -137,7 +137,7 @@ const PROVIDERS = [
     prefix: 'sk-',
     testKey: key => key.startsWith('sk-'),
     endpoint: 'https://api.deepseek.com/v1/models',
-    headers: key => ({ 'Authorization': `Key ${key}` }),
+    headers: key => ({ 'Authorization': `Bearer ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
