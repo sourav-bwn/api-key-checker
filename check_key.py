@@ -98,7 +98,7 @@ PROVIDERS = [
         "test_key": lambda k: k.startswith("r8_"),
         "method": "GET",
         "endpoint": "https://api.replicate.com/v1/models",
-        "headers": lambda k: {"Authorization": f"Key {k}"},
+        "headers": lambda k: {"Authorization": f"Bearer {k}"},
         "validate": lambda r, c: c not in (401, 403),
     },
     {
