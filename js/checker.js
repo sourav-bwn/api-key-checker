@@ -1,13 +1,15 @@
 const PROVIDERS = [
   {
     name: 'OpenAI',
+    prefix: 'sk-',
     testKey: key => key.startsWith('sk-'),
     endpoint: 'https://api.openai.com/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Anthropic',
+    prefix: 'sk-ant-',
     testKey: key => key.startsWith('sk-ant-'),
     endpoint: 'https://api.anthropic.com/v1/messages',
     headers: key => ({
@@ -23,6 +25,7 @@ const PROVIDERS = [
   },
   {
     name: 'Google Gemini',
+    prefix: 'AIza',
     testKey: key => key.startsWith('AIza'),
     endpoint: key => `https://generativelanguage.googleapis.com/v1/models?key=${key}`,
     headers: () => ({}),
@@ -30,20 +33,23 @@ const PROVIDERS = [
   },
   {
     name: 'Groq',
+    prefix: 'gsk_',
     testKey: key => key.startsWith('gsk_'),
     endpoint: 'https://api.groq.com/openai/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Hugging Face',
+    prefix: 'hf_',
     testKey: key => key.startsWith('hf_'),
     endpoint: 'https://huggingface.co/api/models?limit=1',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Cohere',
+    prefix: 'co',
     testKey: key => key.startsWith('co'),
     endpoint: 'https://api.cohere.ai/v1/models',
     headers: key => ({
@@ -54,27 +60,31 @@ const PROVIDERS = [
   },
   {
     name: 'Together AI',
+    prefix: 'tgp-',
     testKey: key => key.startsWith('tgp-'),
     endpoint: 'https://api.together.xyz/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Mistral',
+    prefix: 'xi-',
     testKey: key => key.startsWith('xi-'),
     endpoint: 'https://api.mistral.ai/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Perplexity',
+    prefix: 'pplx-',
     testKey: key => key.startsWith('pplx-'),
     endpoint: 'https://api.perplexity.ai/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Replicate',
+    prefix: 'r8_',
     testKey: key => key.startsWith('r8_'),
     endpoint: 'https://api.replicate.com/v1/models',
     headers: key => ({ 'Authorization': `Key ${key}` }),
@@ -82,6 +92,7 @@ const PROVIDERS = [
   },
   {
     name: 'ElevenLabs',
+    prefix: 'sk_',
     testKey: key => key.startsWith('sk_'),
     endpoint: 'https://api.elevenlabs.io/v1/user',
     headers: key => ({ 'xi-api-key': key }),
@@ -89,41 +100,47 @@ const PROVIDERS = [
   },
   {
     name: 'OpenRouter',
+    prefix: 'sk-or-',
     testKey: key => key.startsWith('sk-or-'),
     endpoint: 'https://openrouter.ai/api/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'GitHub',
+    prefix: 'ghp_',
     testKey: key => key.startsWith('ghp_') || key.startsWith('github_pat_'),
     endpoint: 'https://api.github.com/user',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'GitLab',
+    prefix: 'glpat-',
     testKey: key => key.startsWith('glpat-'),
     endpoint: 'https://gitlab.com/api/v4/user',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'Stability AI',
+    prefix: 'sk-',
     testKey: key => /^sk-[A-Za-z0-9]{20,}$/.test(key),
     endpoint: 'https://api.stability.ai/v1/user/account',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'DeepSeek',
+    prefix: 'sk-',
     testKey: key => key.startsWith('sk-'),
     endpoint: 'https://api.deepseek.com/v1/models',
-    headers: key => ({ 'Authorization': `Bearer ${key}` }),
+    headers: key => ({ 'Authorization': `Key ${key}` }),
     validate: async res => res.status !== 401 && res.status !== 403,
   },
   {
     name: 'NVIDIA',
+    prefix: 'nvapi-',
     testKey: key => key.startsWith('nvapi-'),
     endpoint: 'https://integrate.api.nvidia.com/v1/chat/completions',
     headers: key => ({
@@ -134,6 +151,16 @@ const PROVIDERS = [
     body: { model: 'moonshotai/kimi-k2.6', messages: [{ role: 'user', content: 'test' }], max_tokens: 1 },
   },
 ];
+
+// A key belongs to one provider family: several prefixes nest (sk-ant- and
+// sk-or- both start with sk-). Without this filter a valid Anthropic key was
+// also tested as OpenAI/DeepSeek/Stability and reported INVALID by them.
+function pickProviders(key) {
+  const matched = PROVIDERS.filter(p => p.testKey(key));
+  return matched.filter(p =>
+    !matched.some(other => other !== p && other.prefix !== p.prefix && other.prefix.startsWith(p.prefix))
+  );
+}
 
 const chatMessages = document.getElementById('chatMessages');
 const keyInput = document.getElementById('keyInput');
@@ -159,9 +186,9 @@ function detectProvider(key) {
     providerTag.textContent = 'Paste an API key to auto-detect provider';
     return;
   }
-  const match = PROVIDERS.find(p => p.testKey(key));
-  providerTag.textContent = match
-    ? `Detected: ${match.name}`
+  const matches = pickProviders(key);
+  providerTag.textContent = matches.length
+    ? `Detected: ${matches.map(m => m.name).join(' or ')}`
     : 'Unknown provider format — will try common endpoints';
 }
 
@@ -239,7 +266,7 @@ async function sendKey() {
 
   addTyping();
 
-  const matchedProviders = PROVIDERS.filter(p => p.testKey(key));
+  const matchedProviders = pickProviders(key);
 
   if (matchedProviders.length === 0) {
     removeTyping();
@@ -303,4 +330,9 @@ async function sendKey() {
   removeTyping();
   isChecking = false;
   sendBtn.disabled = !keyInput.value.trim();
+}
+
+// Exported for offline tests; undefined in the browser is fine.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { PROVIDERS, pickProviders };
 }
