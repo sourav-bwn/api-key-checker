@@ -34,7 +34,9 @@ PROVIDERS = [
         "test_key": lambda k: k.startswith("AIza"),
         "method": "GET",
         "endpoint": lambda k: f"https://generativelanguage.googleapis.com/v1/models?key={k}",
-        "validate": lambda r, c: c not in (401, 403),
+        # Google answers an invalid API key with HTTP 400 (API_KEY_INVALID),
+        # not 401 - without it every bad Gemini key showed as VALID.
+        "validate": lambda r, c: c not in (400, 401, 403),
     },
     {
         "name": "Groq",
