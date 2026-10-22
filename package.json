@@ -1,0 +1,9 @@
+{
+  "name": "api-key-checker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Validate API keys across 20+ providers in the browser or from the CLI",
+  "scripts": {
+    "test": "node --test tests/*.test.js && python3 -m unittest discover -s tests"
+  }
+}
